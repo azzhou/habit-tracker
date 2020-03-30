@@ -4,3 +4,4 @@
 venv
 instance/
 planning/
+__pycache__/
