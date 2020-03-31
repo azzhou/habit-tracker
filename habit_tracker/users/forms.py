@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import (DataRequired, Length, Email, EqualTo,
                                 Regexp, ValidationError)
 from habit_tracker.models import User
@@ -27,3 +27,10 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         if User.objects(email=email.data):
             raise ValidationError("That email is already taken.")
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
+    submit = SubmitField("Sign In")
