@@ -5,3 +5,4 @@ venv
 instance/
 planning/
 __pycache__/
+*.pyc
