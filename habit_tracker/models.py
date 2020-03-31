@@ -10,5 +10,6 @@ class User(db.Document):
 
 class Habit(db.Document):
     name = db.StringField(max_length=30, unique=False, required=True)
-    priority = db.IntField(min_value=1, max_value=3)
+    priority = db.IntField(min_value=1, max_value=3, default=1)
+    date_added = db.DateTimeField(default=datetime.utcnow)
     dates = db.ListField(db.DateTimeField(default=datetime.utcnow))
