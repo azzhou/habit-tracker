@@ -1,5 +1,12 @@
 from habit_tracker import db
 from datetime import datetime
+from habit_tracker import login_manager
+
+
+# Required by Flask-login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class User(db.Document):
@@ -10,6 +17,8 @@ class User(db.Document):
 
 class Habit(db.Document):
     name = db.StringField(max_length=30, unique=False, required=True)
-    priority = db.IntField(min_value=1, max_value=3, default=1)
-    date_added = db.DateTimeField(default=datetime.utcnow)
-    dates = db.ListField(db.DateTimeField(default=datetime.utcnow))
+    user = db.ReferenceField(User, required=True)
+    active = db.BooleanField(default=True)
+    points = db.IntField(min_value=1, max_value=5, default=3)
+    date_created = db.DateTimeField(default=datetime.utcnow)
+    dates_fulfilled = db.ListField(db.DateTimeField(default=datetime.utcnow))
