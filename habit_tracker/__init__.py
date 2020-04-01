@@ -27,7 +27,9 @@ def create_app(config_class=DevConfig):
     # Import blueprint objects after db setup
     from habit_tracker.main.routes import main  # noqa 402
     from habit_tracker.users.routes import users  # noqa 402
+    from habit_tracker.habits.routes import habits  # noqa 402
     app.register_blueprint(main)
     app.register_blueprint(users)
+    app.register_blueprint(habits)
 
     return app
