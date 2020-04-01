@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Today's Habits</h1>
+  {% for habit in habits %}
+  <li>{{ habit.name }}</li>
+  {% endfor %}
+{% endblock content %}
