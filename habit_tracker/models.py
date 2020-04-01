@@ -16,16 +16,16 @@ class User(db.Document, UserMixin):
     password = db.StringField(max_length=60, required=True)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User(username='{self.username}', email='{self.email}')"
 
 
 class Habit(db.Document):
     name = db.StringField(max_length=30, unique=False, required=True)
-    user = db.ReferenceField(User, required=True)
+    user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
     active = db.BooleanField(default=True)
     points = db.IntField(min_value=1, max_value=5, default=3)
     date_created = db.DateTimeField(default=datetime.utcnow)
-    dates_fulfilled = db.ListField(db.DateTimeField(default=datetime.utcnow))
+    dates_fulfilled = db.ListField(db.DateTimeField(), default=list)
 
     def __repr__(self):
-        return f"Habit('{self.name}', '{self.user}')"
+        return f"Habit(habit='{self.name}', user='{self.user.username}')"
