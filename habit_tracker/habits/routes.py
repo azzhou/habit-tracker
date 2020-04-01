@@ -6,8 +6,8 @@ from habit_tracker.models import Habit
 habits = Blueprint("habits", __name__)
 
 
-@habits.route("/habits/")
+@habits.route("/my_habits/")
 @login_required
-def habit_list():
+def my_habits():
     habit_list = Habit.objects(user=current_user.id, active=True)
-    return render_template("habits.html", habits=habit_list)
+    return render_template("my_habits.html", habits=habit_list)
