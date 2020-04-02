@@ -27,5 +27,19 @@ class Habit(db.Document):
     date_created = db.DateTimeField(default=datetime.utcnow)
     dates_fulfilled = db.ListField(db.DateTimeField(), default=list)
 
+    def is_complete_today(self):
+        if not self.dates_fulfilled:
+            return False
+        latest_date = self.dates_fulfilled[-1]
+        return latest_date.date() == datetime.utcnow().date()
+
+    def set_complete_today(self):
+        if not self.is_complete_today():
+            self.dates_fulfilled.append(datetime.utcnow())
+
+    def set_incomplete_today(self):
+        if self.is_complete_today():
+            self.dates_fulfilled.pop()
+
     def __repr__(self):
         return f"Habit(habit='{self.name}', user='{self.user.username}')"
