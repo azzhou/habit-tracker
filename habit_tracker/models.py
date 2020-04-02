@@ -24,18 +24,15 @@ class Habit(db.Document):
     user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
     active = db.BooleanField(default=True)
     points = db.IntField(min_value=1, max_value=5, default=3)
-    date_created = db.DateTimeField(default=datetime.utcnow)
+    date_created = db.DateTimeField(default=datetime.today)
     dates_fulfilled = db.ListField(db.DateTimeField(), default=list)
 
     def is_complete_today(self):
-        if not self.dates_fulfilled:
-            return False
-        latest_date = self.dates_fulfilled[-1]
-        return latest_date.date() == datetime.utcnow().date()
+        return self.dates_fulfilled and self.dates_fulfilled[-1].date() == datetime.today().date()
 
     def set_complete_today(self):
         if not self.is_complete_today():
-            self.dates_fulfilled.append(datetime.utcnow())
+            self.dates_fulfilled.append(datetime.today())
 
     def set_incomplete_today(self):
         if self.is_complete_today():
