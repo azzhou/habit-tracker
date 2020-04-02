@@ -10,11 +10,11 @@
           {{ form.email.label }}
           {% if form.email.errors %}
             {{ form.email(class="form-control form-control-lg is-invalid") }}
-              <div class="invalid-feedback">
-                {% for error in form.email.errors %}
-                  <span>{{ error }}</span>
-                {% endfor %}
-              </div>
+            <div class="invalid-feedback">
+              {% for error in form.email.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
           {% else %}
             {{ form.email(class="form-control form-control-lg") }}
           {% endif %}
