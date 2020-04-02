@@ -21,7 +21,8 @@ class User(db.Document, UserMixin):
 
 class Habit(db.Document):
     name = db.StringField(max_length=30, unique=False, required=True)
-    user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
+    unique_name = db.StringField(max_length=30, unique=False, required=True)
+    user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="unique_name")
     active = db.BooleanField(default=True)
     points = db.IntField(min_value=1, max_value=5, default=3)
     date_created = db.DateTimeField(default=datetime.today)
