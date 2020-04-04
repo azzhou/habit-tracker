@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
 from habit_tracker.models import Habit
 from habit_tracker.habits.forms import create_daily_habits_form, AddHabitForm
-from habit_tracker.habits.utils import unique_habit_name
 
 
 habits = Blueprint("habits", __name__)
@@ -42,7 +41,6 @@ def new_habit():
     if form.validate_on_submit():
         Habit(
             name=form.name.data,
-            unique_name=unique_habit_name(form.name.data),
             user=current_user.id,
             points=form.points.data
         ).save()

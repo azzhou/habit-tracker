@@ -3,7 +3,6 @@ from flask_login import current_user
 from habit_tracker.models import Habit
 from wtforms import BooleanField, SubmitField, StringField, IntegerField
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
-from habit_tracker.habits.utils import unique_habit_name
 
 
 def create_daily_habits_form(habits):
@@ -28,7 +27,7 @@ class AddHabitForm(FlaskForm):
     points = IntegerField("Points", validators=[NumberRange(min=1, max=5)], default=3)
     submit = SubmitField("Add Habit")
 
-    # User must not already have another habit with the same unique name
+    # User must not already have another habit with the same name
     def validate_name(self, name):
-        if Habit.objects(user=current_user.id, unique_name=unique_habit_name(name.data)):
+        if Habit.objects(user=current_user.id, name=name.data):
             raise ValidationError("You have previously added that habit.")

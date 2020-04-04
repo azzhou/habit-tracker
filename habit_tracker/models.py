@@ -2,6 +2,7 @@ from habit_tracker import db
 from datetime import datetime
 from habit_tracker import login_manager
 from flask_login import UserMixin
+from slugify import slugify
 
 
 # Required by Flask-login
@@ -21,12 +22,24 @@ class User(db.Document, UserMixin):
 
 class Habit(db.Document):
     name = db.StringField(max_length=30, unique=False, required=True)
-    unique_name = db.StringField(max_length=30, unique=False, required=True)
-    user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="unique_name")
+    slug = db.StringField()
+    user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
     active = db.BooleanField(default=True)
     points = db.IntField(min_value=1, max_value=5, default=3)
     date_created = db.DateTimeField(default=datetime.today)
     dates_fulfilled = db.ListField(db.DateTimeField(), default=list)
+
+    def set_unique_slug(self):
+        increment = 0
+        slug = slugify(self.name) + str(increment)
+        while Habit.objects(user=self.user, slug=slug):
+            increment += 1
+            slug = slugify(self.name) + str(increment)
+        self.slug = slug
+
+    def clean(self):
+        if self.slug is None:
+            self.set_unique_slug()
 
     def is_complete_today(self):
         return self.dates_fulfilled and self.dates_fulfilled[-1].date() == datetime.today().date()
@@ -40,4 +53,4 @@ class Habit(db.Document):
             self.dates_fulfilled.pop()
 
     def __repr__(self):
-        return f"Habit(habit='{self.name}', user='{self.user.username}')"
+        return f"Habit(name='{self.name}', user='{self.user.username}')"
