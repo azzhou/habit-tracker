@@ -1,20 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="content-section"></div>
+    <h4 class="mb-4">Today's Habits</h4>
     <form method="POST" action="">
       {{ daily_habits_form.hidden_tag() }}
-      <fieldset class="form-group">
-        <legend class="mb-4">Today's Habits</legend>
-        {% for habit in habits %}
-          <div class="form-group form-check">
-            {{ daily_habits_form[habit.name](class="form-check-input") }}
-            {{ daily_habits_form[habit.name].label(class="form-check-label") }}
-          </div>
-        {% endfor %}
-      </fieldset>
-      <div class="form-group">
-        {{ daily_habits_form.submit(class="btn btn-outline-secondary") }}
-      </div>
+      <table class = "table table-hover">
+        <thead>
+          <th scope="col">Habit</th>
+          <th scope="col">Today</th>
+          <th scope="col">Yesterday</th>
+          <th scope="col">Edit</th>
+        </thead>
+        <tbody>
+          {% for habit in habits %}
+            <tr>
+              <th scope="row">{{ habit.name }}</th>
+              <td>{{ daily_habits_form[habit.name](class="form-check-input", oninput="submit()") }}</td>
+              <td>asdf</td>
+              <td>
+                <a href="{{ url_for('habits.habit', slug=habit.slug )}}"
+                   class="btn btn-outline-secondary">
+              </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
     </form>
 
     <div>
