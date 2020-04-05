@@ -31,10 +31,10 @@ class Habit(db.Document):
 
     def set_unique_slug(self):
         increment = 0
-        slug = slugify(self.name) + str(increment)
+        slug = slugify(self.name) + "-" + str(increment)
         while Habit.objects(user=self.user, slug=slug):
             increment += 1
-            slug = slugify(self.name) + str(increment)
+            slug = slugify(self.name) + "-" + str(increment)
         self.slug = slug
 
     def clean(self):
