@@ -30,7 +30,8 @@ def my_habits():
         "my_habits.html",
         daily_habits_form=daily_habits_form,
         new_habit_form=new_habit_form,
-        habits=habit_list
+        habits=habit_list,
+        title="My Habits"
     )
 
 
@@ -47,4 +48,20 @@ def new_habit():
         flash(f"You have added '{form.name.data}' to your tracked habits!", category="success")
     else:
         flash(f"You are already tracking '{form.name.data}'.", category="warning")
+    return redirect(url_for("habits.my_habits"))
+
+
+@habits.route("/habit/<string:slug>", methods=["GET", "POST"])
+@login_required
+def habit(slug):
+    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    return render_template("habit.html", habit=habit)
+
+
+@habits.route("/habit/<string:slug>/delete", methods=["POST"])
+@login_required
+def delete_habit(slug):
+    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    habit.delete()
+    flash("Your habit has been deleted!", category="success")
     return redirect(url_for("habits.my_habits"))
