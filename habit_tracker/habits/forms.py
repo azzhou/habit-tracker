@@ -3,6 +3,7 @@ from flask_login import current_user
 from habit_tracker.models import Habit
 from wtforms import BooleanField, SubmitField, StringField, IntegerField
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
+from datetime import date
 
 
 def create_daily_habits_form(habits):
@@ -12,7 +13,7 @@ def create_daily_habits_form(habits):
         setattr(
             DailyHabitsForm,
             habit.name,
-            BooleanField(habit.name, default=habit.is_complete_today())
+            BooleanField(habit.name, default=habit.is_complete(date.today()))
         )
     form = DailyHabitsForm()
     return form
