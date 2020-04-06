@@ -7,8 +7,9 @@
       <table class = "table table-hover">
         <thead>
           <th scope="col">Habit</th>
-          <th scope="col">Today</th>
-          <th scope="col">Yesterday</th>
+          {% for date in dates %}
+            <th scope="col">{{ date.strftime("%-m/%-d") }}</th>
+          {% endfor %}
           <th scope="col">Edit</th>
         </thead>
         <tbody>
@@ -16,9 +17,13 @@
             <tr>
               <th scope="row">{{ habit.name }}</th>
               <td>{{ daily_habits_form[habit.name](class="form-check-input", oninput="submit()") }}</td>
-              <td>asdf</td>
+              {% for date in dates[1:] %}
+                <td>
+                  <input type="checkbox" disabled {{ 'checked' if habit.is_complete(date) else '' }}>
+                </td>
+              {% endfor %}
               <td>
-                <a href="{{ url_for('habits.habit', slug=habit.slug )}}"
+                <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
                    class="btn btn-outline-secondary">
               </td>
             </tr>
