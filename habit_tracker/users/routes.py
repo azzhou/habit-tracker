@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from habit_tracker.users.forms import RegistrationForm, LoginForm
 from flask_login import current_user, login_user, logout_user
 from habit_tracker import bcrypt
-from habit_tracker.models import User
+from habit_tracker.documents import User
 
 
 users = Blueprint("users", __name__)

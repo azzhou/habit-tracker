@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm  # noqa 902
 from flask_login import current_user
-from habit_tracker.models import Habit
+from habit_tracker.documents import Habit
 from wtforms import BooleanField, SubmitField, StringField, IntegerField
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
 from datetime import date

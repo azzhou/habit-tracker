@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
-from habit_tracker.models import Habit
+from habit_tracker.documents import Habit
 from habit_tracker.habits.forms import create_daily_habits_form, AddHabitForm
 from datetime import date, timedelta
 

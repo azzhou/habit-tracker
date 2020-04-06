@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import (DataRequired, Length, Email, EqualTo,
                                 Regexp, ValidationError)
-from habit_tracker.models import User
+from habit_tracker.documents import User
 
 
 class RegistrationForm(FlaskForm):
