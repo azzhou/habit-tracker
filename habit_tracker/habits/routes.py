@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
 from habit_tracker.documents import Habit
 from habit_tracker.habits.forms import create_daily_habits_form, AddHabitForm
-from datetime import date, timedelta
+from datetime import date
+from habit_tracker.habits.utils import grid_date_labels, grid_month_labels, checkbox_dates
 
 
 habits = Blueprint("habits", __name__)
@@ -12,12 +13,9 @@ habits = Blueprint("habits", __name__)
 @login_required
 def my_habits():
     habit_list = Habit.objects(user=current_user.id, active=True)
-    days_shown = 10
-    dates = [date.today() - timedelta(d) for d in range(days_shown)]
 
     daily_habits_form = create_daily_habits_form(habit_list)
     new_habit_form = AddHabitForm()
-
     if daily_habits_form.validate_on_submit():
         all_complete = True
         for habit in habit_list:
@@ -31,13 +29,16 @@ def my_habits():
             flash("Nice work! You have made progress on all of your habits today!", category="success")
         else:
             flash("Your habits have been updated!", category="info")
+        return redirect(url_for("habits.my_habits"))
 
     return render_template(
         "my_habits.html",
         daily_habits_form=daily_habits_form,
         new_habit_form=new_habit_form,
         habits=habit_list,
-        dates=dates,
+        checkbox_dates=checkbox_dates(num_days=14),
+        grid_dates=grid_date_labels(),
+        grid_months=grid_month_labels(),
         title="My Habits"
     )
 
