@@ -1,100 +1,130 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div class="content-section"></div>
-    <h4 class="mb-4">Today's Habits</h4>
-    <form method="POST" action="">
-      {{ daily_habits_form.hidden_tag() }}
-      <table class = "table table-hover">
-        <thead>
-          <th scope="col">Habit</th>
-          {% for date in dates %}
-            <th scope="col">{{ date.strftime("%-m/%-d") }}</th>
+<div class="content-section"></div>
+<h4 class="mb-4">Habit Checklist</h4>
+
+<!-- Checkbox table and form -->
+<form method="POST" action="">
+  {{ daily_habits_form.hidden_tag() }}
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <th scope="col"></th>
+        {% for date in checkbox_dates %}
+          <th scope="col" class="date-label">{{ date.strftime("%-m/%-d") }}</th>
+        {% endfor %}
+      </thead>
+      <tbody>
+        {% for habit in habits %}
+        <tr>
+          <th scope="row" class="habit-label">
+            <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
+              class="stretched-link habit-link">
+              {{ habit.name }}
+            </a>
+          </th>
+          <td>
+            <label class="checkmark-container">
+              {{ daily_habits_form[habit.name](oninput="submit()") }}
+              <span class="checkmark"></span>
+            </label>
+          </td>
+          {% for date in checkbox_dates[1:] %}
+          <td>
+            <label class="checkmark-container">
+              <input type="checkbox" disabled {{ 'checked' if habit.is_complete(date) else '' }}>
+              <span class="checkmark"></span>
+            </label>
+          </td>
           {% endfor %}
-          <th scope="col">Edit</th>
-        </thead>
-        <tbody>
-          {% for habit in habits %}
-            <tr>
-              <th scope="row">{{ habit.name }}</th>
-              <td>{{ daily_habits_form[habit.name](class="form-check-input", oninput="submit()") }}</td>
-              {% for date in dates[1:] %}
-                <td>
-                  <input type="checkbox" disabled {{ 'checked' if habit.is_complete(date) else '' }}>
-                </td>
-              {% endfor %}
-              <td>
-                <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
-                   class="btn btn-outline-secondary">
-              </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-      </table>
-    </form>
-
-    <div>
-      <a class="btn btn-outline-secondary"
-         data-toggle="modal" 
-         data-target="#add_habit_modal">
-        Add New Habit
-      </a>
-    </div>
-
-    <!-- Modal for adding new habit-->
-    <div class="modal"
-         id="add_habit_modal"
-         tabindex="-1"
-         role="dialog"
-         aria-labelledby="add_habit_modal"
-         aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="add_habit_modal">New Habit</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form method="POST" action="{{ url_for('habits.new_habit') }}">
-            {{ new_habit_form.hidden_tag() }}
-            <div class="modal-body">
-              <div class="form-group">
-                {{ new_habit_form.name.label }}
-                {% if new_habit_form.name.errors %}
-                  {{ new_habit_form.name(class="form-control form-control-lg is-invalid") }}
-                  <div class="invalid-feedback">
-                    {% for error in new_habit_form.name.errors %}
-                      <span>{{ error }}</span>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ new_habit_form.name(class="form-control form-control-lg") }}
-                {% endif %}
-              </div>
-              <div class="form-group">
-                {{ new_habit_form.points.label }}
-                {% if new_habit_form.points.errors %}
-                  {{ new_habit_form.points(class="form-control form-control-lg is-invalid") }}
-                  <div class="invalid-feedback">
-                    {% for error in new_habit_form.points.errors %}
-                      <span>{{ error }}</span>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ new_habit_form.points(class="form-control form-control-lg") }}
-                {% endif %}
-              </div>
-            </div>
-            <div class="modal-footer">
-              <div class="form-group">
-                {{ new_habit_form.submit(class="btn btn-outline-secondary") }}
-              </div>
-            </div>
-          </form>
-          
-        </div>
-      </div>
-    </div>
-
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</form>
+<div>
+  <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#add_habit_modal">
+    Add New Habit
+  </a>
+</div>
+
+<!-- Habit 1-yr history grid -->
+<div class="graph">
+  <ul class="months">
+    {% for month in grid_months %}
+      <li>{{ month }}</li>
+    {% endfor %}
+  </ul>
+  <ul class="days">
+    <li>Sun</li>
+    <li>Mon</li>
+    <li>Tue</li>
+    <li>Wed</li>
+    <li>Thu</li>
+    <li>Fri</li>
+    <li>Sat</li>
+  </ul>
+  <ul class="squares">
+    {% for date in grid_dates %}
+      <li data-level="5">
+        <span class="date-tooltip">{{ date }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Modal for adding new habit-->
+<div class="modal" id="add_habit_modal" tabindex="-1" role="dialog" aria-labelledby="add_habit_modal"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="add_habit_modal">New Habit</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{{ url_for('habits.new_habit') }}">
+        {{ new_habit_form.hidden_tag() }}
+        <div class="modal-body">
+          <div class="form-group">
+            {{ new_habit_form.name.label }}
+            {% if new_habit_form.name.errors %}
+            {{ new_habit_form.name(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in new_habit_form.name.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ new_habit_form.name(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ new_habit_form.points.label }}
+            {% if new_habit_form.points.errors %}
+            {{ new_habit_form.points(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in new_habit_form.points.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ new_habit_form.points(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="form-group">
+            {{ new_habit_form.submit(class="btn btn-outline-secondary") }}
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+</div>
 {% endblock content %}
