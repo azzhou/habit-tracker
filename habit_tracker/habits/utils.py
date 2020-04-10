@@ -1,9 +1,18 @@
 from datetime import date, timedelta
 from calendar import month_abbr
+from flask import url_for
 
 
-def _grid_start_date(end_date=date.today()):
-    """Returns the date of the first Sunday shown in the habits history grid"""
+def date_range(start_date, end_date, reverse=False):
+    for n in range(int((end_date - start_date).days) + 1):
+        yield start_date + timedelta(n) if not reverse else end_date - timedelta(n)
+
+
+def _grid_start_date(end_date):
+    """
+    Returns the date of the first date shown in the habits history grid
+    i.e. the Sunday representing the top-left corner of the grid
+    """
     last_sunday = (
         end_date
         if end_date.weekday() == 6  # date is Sunday
@@ -33,12 +42,31 @@ def grid_month_labels(end_date=date.today()):
 
 
 def grid_date_labels(end_date=date.today()):
-    """Returns list of formatted dates for one-year habit history grid"""
+    """
+    Returns list of formatted dates for one-year habit history grid.
+    These labels show up in tooltips when hovering over squares in the grid.
+    """
     start_date = _grid_start_date(end_date)
-    return [d.strftime("%b %-d, %Y")
-            for d in (start_date + timedelta(i)
-                      for i in range((end_date - start_date).days + 1))]
+    return [d.strftime("%b %-d, %Y") for d in date_range(start_date, end_date, reverse=True)]
 
 
-def checkbox_dates(num_days, end_date=date.today()):
-    return [end_date - timedelta(d) for d in range(num_days)]
+def _checklist_start_date(num_days, end_date):
+    return end_date - timedelta(num_days - 1)
+
+
+def checklist_date_labels(num_days, end_date=date.today()):
+    start_date = _checklist_start_date(num_days, end_date)
+    return [date.strftime("%-m/%-d") for date in date_range(start_date, end_date, reverse=True)]
+
+
+def checklist_default_values(habits, num_days, end_date=date.today()):
+    start_date = _checklist_start_date(num_days, end_date)
+    return {habit.id: [habit.is_complete(date) for date in date_range(start_date, end_date, reverse=True)]
+            for habit in habits}
+
+
+def checklist_routes(habits, num_days, end_date=date.today()):
+    start_date = _checklist_start_date(num_days, end_date)
+    return {habit.id: [url_for("habits.update_habit", slug=habit.slug, date=str(date))
+                       for date in date_range(start_date, end_date, reverse=True)]
+            for habit in habits}
