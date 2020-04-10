@@ -41,22 +41,34 @@ class Habit(db.Document):
         if self.slug is None:
             self.set_unique_slug()
 
+    def is_valid_date(self, date):
+        return date <= date.today()
+
     def is_complete(self, date):
-        # DateTimeField converts date types to datetime types, so need to combine when checking
+        # DateTimeField converts date types to datetime types, so need to add timestamp
         return datetime.combine(date, datetime.min.time()) in self.dates_completed
 
     def set_complete(self, date):
-        if not self.is_complete(date):
-            # Mongoengine documentation recommends update + push, but list doesn't get sorted that way
+        if self.is_valid_date(date) and not self.is_complete(date):
+            # Use append because update + push doesn't keep list sorted
             self.dates_completed.append(date)
             self.save()
             self.reload()
 
     def set_incomplete(self, date):
+        self.update(pull__dates_completed=date)
+        self.save()
+        self.reload()
+
+    def toggle_complete(self, date):
+        if not self.is_valid_date(date):
+            return
         if self.is_complete(date):
             self.update(pull__dates_completed=date)
-            self.save()
-            self.reload()
+        else:
+            self.dates_completed.append(date)
+        self.save()
+        self.reload()
 
     def __repr__(self):
         return f"Habit(name='{self.name}', user='{self.user.username}')"
