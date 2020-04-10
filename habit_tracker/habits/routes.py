@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_required
 from habit_tracker.documents import Habit
-from habit_tracker.habits.forms import create_daily_habits_form, AddHabitForm
-from datetime import date
-from habit_tracker.habits.utils import grid_date_labels, grid_month_labels, checkbox_dates
+from habit_tracker.habits.forms import AddHabitForm
+from dateutil.parser import parse
+from habit_tracker.habits.utils import (
+    grid_date_labels, grid_month_labels,
+    checklist_date_labels, checklist_default_values, checklist_routes
+)
 
 
 habits = Blueprint("habits", __name__)
@@ -13,32 +16,18 @@ habits = Blueprint("habits", __name__)
 @login_required
 def my_habits():
     habit_list = Habit.objects(user=current_user.id, active=True)
-
-    daily_habits_form = create_daily_habits_form(habit_list)
+    num_days_in_checklist = 7
     new_habit_form = AddHabitForm()
-    if daily_habits_form.validate_on_submit():
-        all_complete = True
-        for habit in habit_list:
-            if getattr(daily_habits_form, habit.name).data:
-                habit.set_complete(date.today())
-            else:
-                habit.set_incomplete(date.today())
-                all_complete = False
-            habit.save()
-        if all_complete:
-            flash("Nice work! You have made progress on all of your habits today!", category="success")
-        else:
-            flash("Your habits have been updated!", category="info")
-        return redirect(url_for("habits.my_habits"))
 
     return render_template(
         "my_habits.html",
-        daily_habits_form=daily_habits_form,
         new_habit_form=new_habit_form,
         habits=habit_list,
-        checkbox_dates=checkbox_dates(num_days=14),
-        grid_dates=grid_date_labels(),
-        grid_months=grid_month_labels(),
+        checklist_date_labels=checklist_date_labels(num_days_in_checklist),
+        checklist_default_values=checklist_default_values(habit_list, num_days_in_checklist),
+        checklist_routes=checklist_routes(habit_list, num_days_in_checklist),
+        grid_date_labels=grid_date_labels(),
+        grid_month_labels=grid_month_labels(),
         title="My Habits"
     )
 
@@ -64,6 +53,23 @@ def new_habit():
 def habit(slug):
     habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
     return render_template("habit.html", habit=habit)
+
+
+@habits.route("/habit/<string:slug>/update", methods=["POST"])
+@login_required
+def update_habit(slug):
+    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    date_string = request.args.get("date")
+    if date_string:
+        try:
+            my_date = parse(date_string).date()
+            habit.toggle_complete(my_date)
+        except ValueError:
+            return abort(400)
+    else:
+        return abort(400)
+    flash(f"'{habit.name}' has been updated!", category="success")
+    return redirect(url_for("habits.my_habits"))
 
 
 @habits.route("/habit/<string:slug>/delete", methods=["POST"])
