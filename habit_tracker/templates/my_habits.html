@@ -4,18 +4,16 @@
 <h4 class="mb-4">Habit Checklist</h4>
 
 <!-- Checkbox table and form -->
-<form method="POST" action="">
-  {{ daily_habits_form.hidden_tag() }}
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <th scope="col"></th>
-        {% for date in checkbox_dates %}
-          <th scope="col" class="date-label">{{ date.strftime("%-m/%-d") }}</th>
-        {% endfor %}
-      </thead>
-      <tbody>
-        {% for habit in habits %}
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <th scope="col"></th>  <!-- Placeholder for blank upper left cell -->
+      {% for date in checklist_date_labels %}
+        <th scope="col" class="date-label">{{ date }}</th>
+      {% endfor %}
+    </thead>
+    <tbody>
+      {% for habit in habits %}
         <tr>
           <th scope="row" class="habit-label">
             <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
@@ -23,26 +21,24 @@
               {{ habit.name }}
             </a>
           </th>
-          <td>
-            <label class="checkmark-container">
-              {{ daily_habits_form[habit.name](oninput="submit()") }}
-              <span class="checkmark"></span>
-            </label>
-          </td>
-          {% for date in checkbox_dates[1:] %}
-          <td>
-            <label class="checkmark-container">
-              <input type="checkbox" disabled {{ 'checked' if habit.is_complete(date) else '' }}>
-              <span class="checkmark"></span>
-            </label>
-          </td>
+          {% for i in range(checklist_date_labels|length) %}
+            <td>
+              <form action="{{ checklist_routes[habit.id][i] }}", method="POST">
+                <label class="checkmark-container">
+                  <input type="checkbox"
+                        oninput="submit()"
+                        {{ 'checked' if checklist_default_values[habit.id][i] else '' }}>
+                  <span class="checkmark"></span>
+                </label>
+              </form>
+            </td>
           {% endfor %}
         </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</form>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 <div>
   <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#add_habit_modal">
     Add New Habit
@@ -52,7 +48,7 @@
 <!-- Habit 1-yr history grid -->
 <div class="graph">
   <ul class="months">
-    {% for month in grid_months %}
+    {% for month in grid_month_labels %}
       <li>{{ month }}</li>
     {% endfor %}
   </ul>
@@ -66,7 +62,7 @@
     <li>Sat</li>
   </ul>
   <ul class="squares">
-    {% for date in grid_dates %}
+    {% for date in grid_date_labels %}
       <li data-level="5">
         <span class="date-tooltip">{{ date }}</span>
       </li>
