@@ -13,6 +13,7 @@ body {
     margin-top: 5rem;
 }
 
+/* Allows horizontal scrolling of the table */
 .table-responsive {
     margin: 1rem 0;
 }
@@ -27,26 +28,26 @@ body {
     text-align: center;
 }
 
-.table .habit-label {
-    position: relative;
-    font-weight: normal;
-    padding-left: 1rem;
-}
-
 .table .habit-link {
     color: black;
+    font-weight: normal;
     text-decoration: none;
 }
 
-.habit-label:hover {
-    background-color: rgb(180, 180, 180);
+.table .habit-link:hover {
+    font-weight: bold;
+}
+
+.table .habit-label {
+    /* set to relative so that stretched-link works */
+    position: relative;
+    padding-left: 1rem;
 }
 
 .table th {
     padding: 0.4rem;
     vertical-align: middle;
 }
-
 
 /* Customize the label (the checkmark-container) */
 .checkmark-container {
