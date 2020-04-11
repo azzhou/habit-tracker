@@ -13,9 +13,22 @@ body {
     margin-top: 5rem;
 }
 
-/* Allows horizontal scrolling of the table */
-.table-responsive {
-    margin: 1rem 0;
+.container {
+    max-width: 900px
+}
+
+.container-border {
+    border: 0.0625rem #e1e4e8 solid;
+    border-radius: 0.2rem;
+}
+
+.content-section {
+    background: #ffffff;
+    margin-bottom: 20px;
+}
+
+.table {
+    margin: 0;
 }
 
 .table td {
@@ -26,6 +39,7 @@ body {
 
 .date-label {
     text-align: center;
+    font-size: 1.1rem;
 }
 
 .table .habit-link {
@@ -132,17 +146,25 @@ ul {
 .days { grid-area: days; }
 .squares { grid-area: squares; }
 
+.months, .days, .squares { padding: 0; }
+
+.graph-container {
+    overflow: auto;
+    margin: 0;
+}
+
 .graph {
     display: inline-grid;
     grid-template-areas: "empty months" 
                          "days squares";
     grid-template-columns: auto 1fr;
     grid-gap: 0.625rem;
+    margin: 1.25rem 1.5rem 1.25rem 1.25rem;
 }
 
 .months {
     display: grid;
-    grid-template-columns: repeat(54, var(--week-width));
+    grid-template-columns: repeat(53, var(--week-width));
 }
 
 .days, .squares {
@@ -154,12 +176,6 @@ ul {
 .squares {
     grid-auto-flow: column;
     grid-auto-columns: var(--square-size);
-}
-
-.graph {
-    padding: 1.25rem 1.5rem 1.25rem 1.25rem;
-    border: 0.0625rem #e1e4e8 solid;
-    margin: 1.25rem 0;
 }
 
 .days li:nth-child(odd) {
