@@ -17,7 +17,12 @@ habits = Blueprint("habits", __name__)
 def my_habits():
     habit_list = Habit.objects(user=current_user.id, active=True)
     num_days_in_checklist = 7
+
     new_habit_form = AddHabitForm()
+    if new_habit_form.validate_on_submit():
+        Habit(name=new_habit_form.name.data, user=current_user.id).save()
+        flash(f"You have added '{new_habit_form.name.data}' to your tracked habits!", category="success")
+        return redirect(url_for("habits.my_habits"))
 
     return render_template(
         "my_habits.html",
@@ -30,22 +35,6 @@ def my_habits():
         grid_month_labels=grid_month_labels(),
         title="My Habits"
     )
-
-
-@habits.route("/new_habit", methods=["POST"])
-@login_required
-def new_habit():
-    form = AddHabitForm()
-    if form.validate_on_submit():
-        Habit(
-            name=form.name.data,
-            user=current_user.id,
-            points=form.points.data
-        ).save()
-        flash(f"You have added '{form.name.data}' to your tracked habits!", category="success")
-    else:
-        flash(f"You are already tracking '{form.name.data}'.", category="warning")
-    return redirect(url_for("habits.my_habits"))
 
 
 @habits.route("/habit/<string:slug>", methods=["GET", "POST"])
