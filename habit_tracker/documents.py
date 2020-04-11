@@ -25,7 +25,6 @@ class Habit(db.Document):
     slug = db.StringField()
     user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
     active = db.BooleanField(default=True)
-    points = db.IntField(min_value=1, max_value=5, default=3)
     date_created = db.DateTimeField(default=lambda: date.today())
     dates_completed = db.SortedListField(db.DateTimeField(), default=list)
 
