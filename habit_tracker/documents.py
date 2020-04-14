@@ -28,6 +28,12 @@ class Habit(db.Document):
     active = db.BooleanField(default=True)
     date_created = db.DateTimeField(default=lambda: date.today())
 
+    meta = {
+        "indexes": [
+            "user",  # used as a filter in nearly all Habit queries
+        ]
+    }
+
     def set_unique_slug(self):
         """Set a unique url-friendly slug based on the habit name"""
         increment = 0
@@ -129,6 +135,11 @@ class Habit(db.Document):
         else:
             self.set_complete(date)
 
+    def get_longest_streak(self):
+        """Get the number of days in the longest continuous completion streak for the habit"""
+        longest_streak = HabitStreak.objects(habit=self.id).order_by("-streak_length").first()
+        return longest_streak.streak_length if longest_streak else 0
+
     def __repr__(self):
         return f"Habit(name='{self.name}', user='{self.user.username}')"
 
@@ -149,6 +160,13 @@ class HabitStreak(db.Document):
     streak_length = db.IntField(required=True, default=1)
     habit = db.ReferenceField(Habit, required=True, reverse_delete_rule=db.CASCADE, unique_with="start")
     user = db.ReferenceField(User, reverse_delete_rule=db.CASCADE)
+
+    meta = {
+        "indexes": [
+            ("habit", "start", "end"),  # frequently filtered when setting/checking habit completion
+            ("habit", "-streak_length")  # used to efficiently get the longest streak for a habit
+        ]
+    }
 
     def clean(self):
         """Perform validation / data cleaning that is run when document is saved"""
