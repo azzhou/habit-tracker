@@ -5,40 +5,43 @@
 
     <!-- Checkbox table -->
     <div class="mb-5">
-      <div class="table-responsive container-border mb-2">
-        <table class="table">
-          <thead>
-            <th scope="col"></th>  <!-- Placeholder for blank upper left cell -->
-            {% for date in checklist_date_labels %}
-              <th scope="col" class="date-label">{{ date }}</th>
-            {% endfor %}
-          </thead>
-          <tbody>
-            {% for habit in habits %}
-              <tr>
-                <th scope="row" class="habit-label">
-                  <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
-                    class="stretched-link habit-link">
-                    {{ habit.name }}
-                  </a>
-                </th>
-                {% for i in range(checklist_date_labels|length) %}
-                  <td>
-                    <form action="{{ checklist_routes[habit.id][i] }}", method="POST">
-                      <label class="checkmark-container">
-                        <input type="checkbox"
-                              oninput="submit()"
-                              {{ 'checked' if checklist_default_values[habit.id][i] else '' }}>
-                        <span class="checkmark"></span>
-                      </label>
-                    </form>
-                  </td>
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+      {% if habits|length > 0 %}
+        <div class="table-responsive container-border mb-2">
+          <table class="table">
+            <thead>
+              <th scope="col"></th>  <!-- Placeholder for blank upper left cell -->
+              {% for date in checklist_date_labels %}
+                <th scope="col" class="date-label">{{ date }}</th>
+              {% endfor %}
+            </thead>
+            <tbody>
+              {% for habit in habits %}
+                <tr>
+                  <th scope="row" class="habit-label">
+                    <a href="{{ url_for('habits.habit', slug=habit.slug) }}"
+                      class="stretched-link habit-link">
+                      {{ habit.name }}
+                    </a>
+                  </th>
+                  {% for i in range(checklist_date_labels|length) %}
+                    <td>
+                      <form action="{{ checklist_routes[habit.id][i] }}", method="POST">
+                        <label class="checkmark-container">
+                          <input type="checkbox"
+                                oninput="submit()"
+                                {{ 'checked' if checklist_default_values[habit.id][i] else '' }}>
+                          <span class="checkmark"></span>
+                        </label>
+                      </form>
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+      
       <form method="POST" action="">
         {{ new_habit_form.hidden_tag() }}
         {% if new_habit_form.name.errors %}
