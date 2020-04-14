@@ -4,9 +4,8 @@
     <h4 class="mb-4">Checklist</h4>
 
     <!-- Checkbox table -->
-    <form method="POST" action="">
-      {{ new_habit_form.hidden_tag() }}
-      <div class="table-responsive container-border mb-5">
+    <div class="mb-5">
+      <div class="table-responsive container-border mb-2">
         <table class="table">
           <thead>
             <th scope="col"></th>  <!-- Placeholder for blank upper left cell -->
@@ -37,27 +36,23 @@
                 {% endfor %}
               </tr>
             {% endfor %}
-            <tr>
-              <th scope="row">
-                {% if new_habit_form.name.errors %}
-                  {{ new_habit_form.name(class="form-control is-invalid", placeholder="Add New Habit") }}
-                  <div class="invalid-feedback">
-                    {% for error in new_habit_form.name.errors %}
-                      <span>{{ error }}</span>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ new_habit_form.name(class="form-control", placeholder="Add New Habit") }}
-                {% endif %}
-              </th>
-              {% for i in range(checklist_date_labels|length) %}
-                <td></td>  <!-- placeholder so the table is full -->
-              {% endfor %}
-            </tr>
           </tbody>
         </table>
       </div>
-    </form>
+      <form method="POST" action="">
+        {{ new_habit_form.hidden_tag() }}
+        {% if new_habit_form.name.errors %}
+          {{ new_habit_form.name(class="form-control is-invalid", placeholder="Add New Habit") }}
+          <div class="invalid-feedback">
+            {% for error in new_habit_form.name.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ new_habit_form.name(class="form-control", placeholder="Add New Habit") }}
+        {% endif %}
+      </form>
+    </div>
 
     <!-- Habit 1-yr history grid -->
     <h4 class="mb-4">History</h4>
