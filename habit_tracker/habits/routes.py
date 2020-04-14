@@ -40,14 +40,14 @@ def my_habits():
 @habits.route("/habit/<string:slug>", methods=["GET", "POST"])
 @login_required
 def habit(slug):
-    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
     return render_template("habit.html", habit=habit)
 
 
 @habits.route("/habit/<string:slug>/update", methods=["POST"])
 @login_required
 def update_habit(slug):
-    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
     date_string = request.args.get("date")
     if date_string:
         try:
@@ -64,7 +64,7 @@ def update_habit(slug):
 @habits.route("/habit/<string:slug>/delete", methods=["POST"])
 @login_required
 def delete_habit(slug):
-    habit = Habit.objects(slug=slug, user=current_user.id).get_or_404()
+    habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
     habit.delete()
     flash("Your habit has been deleted!", category="success")
     return redirect(url_for("habits.my_habits"))
