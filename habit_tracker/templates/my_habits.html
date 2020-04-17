@@ -1,16 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="content-section">
-    <h4 class="mb-4">Checklist</h4>
 
-    <!-- Checkbox table -->
+    <!-- Habit Checklist -->
+    <h4 class="mb-4">Checklist</h4>
     <div class="mb-5">
       {% if habits|length > 0 %}
         <div class="table-responsive container-border mb-2">
           <table class="table">
             <thead>
               <th scope="col"></th>  <!-- Placeholder for blank upper left cell -->
-              {% for date in checklist_date_labels %}
+              {% for date in checklist.date_labels %}
                 <th scope="col" class="date-label">{{ date }}</th>
               {% endfor %}
             </thead>
@@ -23,13 +23,13 @@
                       {{ habit.name }}
                     </a>
                   </th>
-                  {% for i in range(checklist_date_labels|length) %}
+                  {% for i in range(checklist.date_labels|length) %}
                     <td>
-                      <form action="{{ checklist_routes[habit.id][i] }}", method="POST">
+                      <form action="{{ checklist.routes[habit.id][i] }}", method="POST">
                         <label class="checkmark-container">
                           <input type="checkbox"
                                 oninput="submit()"
-                                {{ 'checked' if checklist_default_values[habit.id][i] else '' }}>
+                                {{ 'checked' if checklist.default_values[habit.id][i] else '' }}>
                           <span class="checkmark"></span>
                         </label>
                       </form>
@@ -62,7 +62,7 @@
     <div class="graph-container container-border mb-5">
       <div class="graph">
         <ul class="months">
-          {% for month in grid_month_labels %}
+          {% for month in history_grid.month_labels %}
             <li>{{ month }}</li>
           {% endfor %}
         </ul>
@@ -76,14 +76,19 @@
           <li>Sat</li>
         </ul>
         <ul class="squares">
-          {% for date in grid_date_labels %}
-            <li data-level="5">
-              <span class="date-tooltip">{{ date }}</span>
+          {% for grid_square in history_grid.squares %}
+            <li data-level="{{ grid_square.level }}">
+              <div class="grid-tooltip">
+                <div class="font-weight-bold">
+                  {{ grid_square.num_complete }} / {{ grid_square.num_active }} completed
+                </div>
+                <div>on {{ grid_square.date_label }}</div>
+              </div>
             </li>
           {% endfor %}
         </ul>
       </div>
     </div>
-    
+
   </div>
 {% endblock content %}

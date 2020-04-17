@@ -3,10 +3,7 @@ from flask_login import current_user, login_required
 from habit_tracker.documents import Habit
 from habit_tracker.habits.forms import AddHabitForm
 from dateutil.parser import parse
-from habit_tracker.habits.utils import (
-    grid_date_labels, grid_month_labels,
-    checklist_date_labels, checklist_default_values, checklist_routes
-)
+from habit_tracker.habits.utils import create_habit_history_grid, create_habit_checklist
 
 
 habits = Blueprint("habits", __name__)
@@ -24,15 +21,14 @@ def my_habits():
         flash(f"You have added '{new_habit_form.name.data}' to your tracked habits!", category="success")
         return redirect(url_for("habits.my_habits"))
 
+    checklist = create_habit_checklist(habits=habit_list, num_days=num_days_in_checklist)
+    history_grid = create_habit_history_grid(habits=habit_list, break_points=[0, 0.25, 0.5, 0.75, 1])
     return render_template(
         "my_habits.html",
         new_habit_form=new_habit_form,
         habits=habit_list,
-        checklist_date_labels=checklist_date_labels(num_days_in_checklist),
-        checklist_default_values=checklist_default_values(habit_list, num_days_in_checklist),
-        checklist_routes=checklist_routes(habit_list, num_days_in_checklist),
-        grid_date_labels=grid_date_labels(),
-        grid_month_labels=grid_month_labels(),
+        checklist=checklist,
+        history_grid=history_grid,
         title="My Habits"
     )
 
@@ -41,7 +37,7 @@ def my_habits():
 @login_required
 def habit(slug):
     habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
-    return render_template("habit.html", habit=habit)
+    return render_template("habit.html", habit=habit, title=habit.name)
 
 
 @habits.route("/habit/<string:slug>/update", methods=["POST"])
