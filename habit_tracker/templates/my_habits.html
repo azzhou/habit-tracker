@@ -25,14 +25,16 @@
                   </th>
                   {% for i in range(checklist.date_labels|length) %}
                     <td>
-                      <form action="{{ checklist.routes[habit.id][i] }}", method="POST">
-                        <label class="checkmark-container">
-                          <input type="checkbox"
-                                oninput="submit()"
-                                {{ 'checked' if checklist.default_values[habit.id][i] else '' }}>
-                          <span class="checkmark"></span>
-                        </label>
-                      </form>
+                      {% if checklist.completion[habit.id][i] != "inactive" %}
+                        <form action="{{ checklist.routes[habit.id][i] }}", method="POST">
+                          <label class="checkmark-container">
+                            <input type="checkbox"
+                                  oninput="submit()"
+                                  {{ "checked" if checklist.completion[habit.id][i] == "complete" else "" }}>
+                            <span class="checkmark"></span>
+                          </label>
+                        </form>
+                        {% endif %}
                     </td>
                   {% endfor %}
                 </tr>

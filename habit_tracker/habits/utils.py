@@ -3,6 +3,13 @@ from calendar import month_abbr
 from collections import namedtuple
 from datetime import date, timedelta
 from flask import url_for
+from enum import Enum
+
+
+class CompletionStatus(Enum):
+    complete = 1
+    incomplete = 2
+    inactive = 3
 
 
 def date_range(start_date, end_date, reverse=False):
@@ -86,12 +93,14 @@ def _grid_squares(habits, break_points, start_date, end_date):
 
     grid = []
     curr_date = start_date
-    completion_per_habit = list(map(lambda habit: habit.is_complete_range(start_date, end_date), habits))
+
+    completion_per_habit = [habit.get_completion_status_range(start_date, end_date) for habit in habits]
     completion_per_day = zip(*completion_per_habit)
 
     for one_day_completion in completion_per_day:
-        num_complete = sum(one_day_completion)
-        num_active = len(one_day_completion)
+        num_complete = one_day_completion.count(CompletionStatus.complete)
+        num_incomplete = one_day_completion.count(CompletionStatus.incomplete)
+        num_active = num_complete + num_incomplete
         ratio = num_complete / num_active if num_active > 0 else 0
         level = bisect(break_points, ratio) - 1
         date_label = curr_date.strftime("%b %-d, %Y")
@@ -136,9 +145,10 @@ def create_habit_checklist(habits, num_days, end_date=date.today()):
     """
     start_date = end_date - timedelta(num_days - 1)
     date_labels = [date.strftime("%-m/%-d") for date in date_range(start_date, end_date, reverse=True)]
-    default_values = {
+    completion_statuses = {
         habit.id: [
-            habit.is_complete(date)
+            # Jinja templates don't support Enum classes, so use the name instead
+            habit.get_completion_status(date).name
             for date in date_range(start_date, end_date, reverse=True)
         ]
         for habit in habits
@@ -150,5 +160,5 @@ def create_habit_checklist(habits, num_days, end_date=date.today()):
         ]
         for habit in habits
     }
-    HabitChecklist = namedtuple("HabitChecklist", ["date_labels", "default_values", "routes"])
-    return HabitChecklist(date_labels=date_labels, default_values=default_values, routes=routes)
+    HabitChecklist = namedtuple("HabitChecklist", ["date_labels", "completion", "routes"])
+    return HabitChecklist(date_labels=date_labels, completion=completion_statuses, routes=routes)
