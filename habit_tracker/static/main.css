@@ -159,7 +159,7 @@ ul {
                          "days squares";
     grid-template-columns: auto 1fr;
     grid-gap: 0.625rem;
-    margin: 1.25rem 1.5rem 1.25rem 1.25rem;
+    margin: 1.6rem 1.8rem;
 }
 
 .months {
@@ -182,36 +182,34 @@ ul {
     visibility: hidden;
 }
 
-.squares li { background-color: #e4e4e4; }
-.squares li[data-level="0"] { background-color: rgb(228,228,228); }
-.squares li[data-level="1"] { background-color: rgb(194,194,194); }
-.squares li[data-level="2"] { background-color: rgb(160,160,160); }
-.squares li[data-level="3"] { background-color: rgb(126,126,126); }
-.squares li[data-level="4"] { background-color: rgb(92,92,92); }
-.squares li[data-level="5"] { background-color: rgb(58,58,58); }
+/* Colors in the habit history grid by level */
+.squares li { background-color: rgb(231, 231, 231); }
+.squares li[data-level="1"] { background-color: rgb(165, 165, 165); }
+.squares li[data-level="2"] { background-color: rgb(110, 110, 110); }
+.squares li[data-level="3"] { background-color: rgb(55, 55, 55); }
+.squares li[data-level="4"] { background-color: rgb(0, 0, 0); }
 
-.squares li:hover .date-tooltip{
+.squares li:hover .grid-tooltip{
     visibility: visible;
 }
 
-.date-tooltip {
-    --tooltip-width: 5.625rem;
+.grid-tooltip {
+    --tooltip-width: 7rem;
     font-size: 0.6875rem;
     visibility: hidden;
     display: block;
     border-radius: 0.25rem;
     width: var(--tooltip-width);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: #fff;
     text-align: center;
     padding: 0.5rem;
-    z-index: 1;
     position: relative;
-    bottom: calc(var(--square-size) * 4);
+    bottom: calc(var(--square-size) * 5);
     right: calc((var(--tooltip-width) - var(--square-size)) / 2);
 }
 
-.date-tooltip::after {
+.grid-tooltip::after {
     content: "";
     position: absolute;
     top: 100%;
