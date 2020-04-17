@@ -63,6 +63,22 @@ class Habit(db.Document):
         ).first()
         return streak is not None
 
+    def is_complete_range(self, start_date, end_date):
+        """Return a list of booleans representing habit completion between two inclusive dates"""
+        start_date = datetime.combine(start_date, datetime.min.time())
+        end_date = datetime.combine(end_date, datetime.min.time())
+        streaks = HabitStreak.objects(
+            habit=self.id,
+            start__lte=end_date,
+            end__gte=start_date
+        )
+        completion_list = [False] * ((end_date - start_date).days + 1)
+        for streak in streaks:
+            start = max(0, (streak.start - start_date).days)
+            end = min(len(completion_list), (streak.end - start_date).days + 1)
+            completion_list[start:end] = [True] * (end - start)
+        return completion_list
+
     def set_complete(self, date):
         """Set a habit as complete on a given date"""
         if not self.is_valid_date(date) or self.is_complete(date):
@@ -137,8 +153,7 @@ class Habit(db.Document):
 
     def get_longest_streak(self):
         """Get the number of days in the longest continuous completion streak for the habit"""
-        longest_streak = HabitStreak.objects(habit=self.id).order_by("-streak_length").first()
-        return longest_streak.streak_length if longest_streak else 0
+        return HabitStreak.objects(habit=self.id).order_by("-streak_length").first()
 
     def __repr__(self):
         return f"Habit(name='{self.name}', user='{self.user.username}')"
@@ -163,8 +178,11 @@ class HabitStreak(db.Document):
 
     meta = {
         "indexes": [
-            ("habit", "start", "end"),  # frequently filtered when setting/checking habit completion
-            ("habit", "-streak_length")  # used to efficiently get the longest streak for a habit
+            # frequently filtered when setting/checking habit completion
+            ("habit", "start", "end"),
+
+            # used to efficiently get the longest streak for a habit
+            ("habit", "-streak_length")
         ]
     }
 
