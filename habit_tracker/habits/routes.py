@@ -8,6 +8,9 @@ from habit_tracker.habits.utils import create_habit_history_grid, create_habit_c
 
 habits = Blueprint("habits", __name__)
 
+# Set break points that determine segmentation of completion rates used to color the habit history grid
+HISTORY_GRID_BREAKS = [0, 0.25, 0.5, 0.75, 1]
+
 
 @habits.route("/my_habits/", methods=["GET", "POST"])
 @login_required
@@ -22,7 +25,7 @@ def my_habits():
         return redirect(url_for("habits.my_habits"))
 
     checklist = create_habit_checklist(habits=habit_list, num_days=num_days_in_checklist)
-    history_grid = create_habit_history_grid(habits=habit_list, break_points=[0, 0.25, 0.5, 0.75, 1])
+    history_grid = create_habit_history_grid(habits=habit_list, break_points=HISTORY_GRID_BREAKS)
     return render_template(
         "my_habits.html",
         new_habit_form=new_habit_form,

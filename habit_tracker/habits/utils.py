@@ -3,13 +3,7 @@ from calendar import month_abbr
 from collections import namedtuple
 from datetime import date, timedelta
 from flask import url_for
-from enum import Enum
-
-
-class CompletionStatus(Enum):
-    complete = 1
-    incomplete = 2
-    inactive = 3
+from habit_tracker.documents import HabitStatus
 
 
 def date_range(start_date, end_date, reverse=False):
@@ -98,8 +92,8 @@ def _grid_squares(habits, break_points, start_date, end_date):
     completion_per_day = zip(*completion_per_habit)
 
     for one_day_completion in completion_per_day:
-        num_complete = one_day_completion.count(CompletionStatus.complete)
-        num_incomplete = one_day_completion.count(CompletionStatus.incomplete)
+        num_complete = one_day_completion.count(HabitStatus.COMPLETE)
+        num_incomplete = one_day_completion.count(HabitStatus.INCOMPLETE)
         num_active = num_complete + num_incomplete
         ratio = num_complete / num_active if num_active > 0 else 0
         level = bisect(break_points, ratio) - 1

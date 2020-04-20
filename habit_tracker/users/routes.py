@@ -11,7 +11,7 @@ users = Blueprint("users", __name__)
 @users.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        flash("You are already logged in.", category="warning")
+        flash("You are already logged in.", category="info")
         return redirect(url_for("main.home"))
 
     form = RegistrationForm()

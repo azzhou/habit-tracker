@@ -25,12 +25,12 @@
                   </th>
                   {% for i in range(checklist.date_labels|length) %}
                     <td>
-                      {% if checklist.completion[habit.id][i] != "inactive" %}
+                      {% if checklist.completion[habit.id][i] != "INACTIVE" %}
                         <form action="{{ checklist.routes[habit.id][i] }}", method="POST">
                           <label class="checkmark-container">
                             <input type="checkbox"
                                   oninput="submit()"
-                                  {{ "checked" if checklist.completion[habit.id][i] == "complete" else "" }}>
+                                  {{ "checked" if checklist.completion[habit.id][i] == "COMPLETE" else "" }}>
                             <span class="checkmark"></span>
                           </label>
                         </form>

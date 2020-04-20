@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 from habit_tracker import login_manager
 from flask_login import UserMixin
 from slugify import slugify
-from habit_tracker.habits.utils import CompletionStatus
+from enum import Enum
 
 
 # Required by Flask-login
@@ -20,6 +20,12 @@ class User(db.Document, UserMixin):
 
     def __repr__(self):
         return f"User(username='{self.username}', email='{self.email}')"
+
+
+class HabitStatus(Enum):
+    COMPLETE = 1
+    INCOMPLETE = 2
+    INACTIVE = 3
 
 
 class Habit(db.Document):
@@ -61,17 +67,17 @@ class Habit(db.Document):
             date (datetime.date): Date for which we are checking a habit's status.
 
         Returns:
-            CompletionStatus: Enum representing habit completion status.
+            HabitStatus: Enum representing habit completion status.
         """
         date_with_time = datetime.combine(date, datetime.min.time())
         if not self.is_active_date(date):
-            return CompletionStatus.inactive
+            return HabitStatus.INACTIVE
         streak = HabitStreak.objects(
             habit=self.id,
             start__lte=date_with_time,
             end__gte=date_with_time
         ).first()
-        return CompletionStatus.complete if streak is not None else CompletionStatus.incomplete
+        return HabitStatus.COMPLETE if streak is not None else HabitStatus.INCOMPLETE
 
     def get_completion_status_range(self, start_date, end_date):
         """Get a list of habit completion statuses between a start and end date.
@@ -81,12 +87,12 @@ class Habit(db.Document):
             end_date (datetime.date): Inclusive end date of range.
 
         Returns:
-            list[CompletionStatus]: List containing completion status of a habit for the range of dates.
+            list[HabitStatus]: List containing completion status of a habit for the range of dates.
         """
         start_date = datetime.combine(start_date, datetime.min.time())
         end_date = datetime.combine(end_date, datetime.min.time())
         # List has incomplete status as default
-        completion_list = [CompletionStatus.incomplete] * ((end_date - start_date).days + 1)
+        completion_list = [HabitStatus.INCOMPLETE] * ((end_date - start_date).days + 1)
         streaks = HabitStreak.objects(
             habit=self.id,
             start__lte=end_date,
@@ -96,17 +102,17 @@ class Habit(db.Document):
         for streak in streaks:
             start = max(0, (streak.start - start_date).days)
             end = min(len(completion_list), (streak.end - start_date).days + 1)
-            completion_list[start:end] = [CompletionStatus.complete] * (end - start)
+            completion_list[start:end] = [HabitStatus.COMPLETE] * (end - start)
         # Replace those that are inactive
         if start_date < self.date_created:
             inactive_days = (self.date_created - start_date).days
-            completion_list[:inactive_days] = [CompletionStatus.inactive] * inactive_days
+            completion_list[:inactive_days] = [HabitStatus.INACTIVE] * inactive_days
         return completion_list
 
     def set_complete(self, date):
         """Set a habit as complete on a given date"""
         if (not self.is_active_date(date) or
-                self.get_completion_status(date) == CompletionStatus.complete):
+                self.get_completion_status(date) == HabitStatus.COMPLETE):
             return
         date_with_time = datetime.combine(date, datetime.min.time())
         previous_day = date_with_time - timedelta(1)
@@ -171,7 +177,7 @@ class Habit(db.Document):
         """Set a habit as completed if it is currently incomplete, otherwise set it as incomplete"""
         if not self.is_active_date(date):
             return
-        if self.get_completion_status(date) == CompletionStatus.complete:
+        if self.get_completion_status(date) == HabitStatus.COMPLETE:
             self.set_incomplete(date)
         else:
             self.set_complete(date)
