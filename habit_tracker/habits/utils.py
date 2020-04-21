@@ -4,6 +4,7 @@ from collections import namedtuple
 from datetime import date, timedelta
 from flask import url_for
 from habit_tracker.documents import HabitStatus
+from pandas import Series
 
 
 def date_range(start_date, end_date, reverse=False):
@@ -156,3 +157,26 @@ def create_habit_checklist(habits, num_days, end_date=date.today()):
     }
     HabitChecklist = namedtuple("HabitChecklist", ["date_labels", "completion", "routes"])
     return HabitChecklist(date_labels=date_labels, completion=completion_statuses, routes=routes)
+
+
+def habit_strength(habit, num_points, window_size):
+    end_date = date.today()
+    start_date = end_date - timedelta(num_points - 1)
+    completion = habit.get_completion_status_range(start_date, end_date)
+    completion_bin = [1 if c == HabitStatus.COMPLETE else 0 for c in completion]
+    return Series(data=moving_avg(completion_bin, window_size),
+                  index=list(date_range(start_date, end_date)),
+                  name="Habit Strength")
+
+
+def moving_avg(nums, window_size):
+    extended_nums = [0] * window_size + nums
+    moving_avg = []
+    current_sum = 0
+    start, end = 0, window_size
+    while end < len(extended_nums):
+        current_sum += extended_nums[end] - extended_nums[start]
+        moving_avg.append(current_sum / window_size)
+        start += 1
+        end += 1
+    return moving_avg

@@ -2,7 +2,7 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="content-section">
-    <h2>{{ habit.name }}</h1>
+    <h2>{{ habit.name }}</h2>
     <button type="button" 
             class="btn btn-outline-secondary btn-sm mb-4"
             data-toggle="modal" 
@@ -40,8 +40,8 @@
 
     <!-- Best Streaks -->
     {% if longest_streaks|length > 0 %}
-      <h4 class="mb-4">Best Streaks</h4>
-      <div class="streak-container">
+      <div class="section-header">Best Streaks</div>
+      <div class="streak-container mb-5">
       {% for streak in longest_streaks %}
         <!-- Vars used to calculate width of streak span -->
         {% set full_width = 45 %}
@@ -56,6 +56,13 @@
       {% endfor %}
       </div>
     {% endif %}
+
+    <!-- Habit Strength -->
+    <div class="section-header">Habit Strength</div>
+    <img src="{{ url_for('habits.plot_habit_strength', slug=habit.slug) }}"
+         alt="habit strength plot svg"
+         width="100%"
+    >
 
   </div>
 {% endblock content %}

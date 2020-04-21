@@ -1,9 +1,15 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
+from flask import Blueprint, render_template, flash, redirect, url_for, request, abort, Response
 from flask_login import current_user, login_required
 from habit_tracker.documents import Habit
 from habit_tracker.habits.forms import AddHabitForm
+from datetime import date
 from dateutil.parser import parse
-from habit_tracker.habits.utils import create_habit_history_grid, create_habit_checklist
+from habit_tracker.habits.utils import create_habit_history_grid, create_habit_checklist, habit_strength
+from matplotlib.backends.backend_svg import FigureCanvasSVG
+from matplotlib.figure import Figure
+from matplotlib.ticker import PercentFormatter
+from matplotlib.dates import DateFormatter
+from io import BytesIO
 
 
 habits = Blueprint("habits", __name__)
@@ -42,6 +48,7 @@ def habit(slug):
     habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
     longest_streaks = habit.get_longest_streaks(num=5)
     history_grid = create_habit_history_grid(habits=[habit], break_points=HISTORY_GRID_BREAKS)
+
     return render_template(
         "habit.html",
         habit=habit,
@@ -75,3 +82,38 @@ def delete_habit(slug):
     habit.delete()
     flash("Your habit has been deleted!", category="success")
     return redirect(url_for("habits.my_habits"))
+
+
+@habits.route("/habit/<string:slug>/strength")
+def plot_habit_strength(slug, max_points=100, window_size=14):
+    habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
+
+    # Determine number of dates to plot
+    max_points = min(max_points, 365)
+    min_points = 7
+    habit_age = (date.today() - habit.date_created.date()).days
+    num_points = min(max_points, max(habit_age, min_points))
+
+    habit_strength_ts = habit_strength(habit, num_points, window_size)
+    fig = Figure(figsize=(9, 5))
+    axis = fig.add_subplot(1, 1, 1, ylim=(0, 1.05))
+    # axis.plot(habit_strength_ts, color="black")
+    axis.fill_between(
+        x=habit_strength_ts.index,
+        y1=0,
+        y2=habit_strength_ts.values,
+        color="grey"
+    )
+
+    date_format = DateFormatter("%b %-d, %Y")
+    axis.xaxis.set_major_formatter(date_format)
+    axis.yaxis.set_major_formatter(PercentFormatter(xmax=1))
+    axis.xaxis.set_ticks_position("none")
+    axis.yaxis.set_ticks_position("none")
+    axis.grid(color="#c9c9c9")
+    # axis.margins(x=0)
+    fig.tight_layout()
+
+    output = BytesIO()
+    FigureCanvasSVG(fig).print_svg(output)
+    return Response(output.getvalue(), mimetype="image/svg+xml")
