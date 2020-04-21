@@ -40,7 +40,15 @@ def my_habits():
 @login_required
 def habit(slug):
     habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
-    return render_template("habit.html", habit=habit, title=habit.name)
+    longest_streaks = habit.get_longest_streaks(num=5)
+    history_grid = create_habit_history_grid(habits=[habit], break_points=HISTORY_GRID_BREAKS)
+    return render_template(
+        "habit.html",
+        habit=habit,
+        title=habit.name,
+        history_grid=history_grid,
+        longest_streaks=longest_streaks
+    )
 
 
 @habits.route("/habit/<string:slug>/update", methods=["POST"])

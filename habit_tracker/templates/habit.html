@@ -1,34 +1,61 @@
+{% from "macros.html" import render_history_grid %}
 {% extends "layout.html" %}
 {% block content %}
-  <h1>{{ habit.name }}</h1>
-  <button type="button" 
-          class="btn btn-danger btn-sm m-1" 
-          data-toggle="modal" 
-          data-target="#deleteModal">
-    Delete
-  </button>
-  <a href="{{ url_for('habits.my_habits') }}">Return to habits checklist</a>
+  <div class="content-section">
+    <h2>{{ habit.name }}</h1>
+    <button type="button" 
+            class="btn btn-outline-secondary btn-sm mb-4"
+            data-toggle="modal" 
+            data-target="#deleteModal">
+      Delete
+    </button>
 
-  <!-- Modal -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Delete Habit?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Are you sure? This cannot be undone.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <form action="{{ url_for('habits.delete_habit', slug=habit.slug) }}", method="POST">
-            <input class="btn btn-danger" type="submit" value="Delete">
-          </form>
+    <!-- <a href="{{ url_for('habits.my_habits') }}">Return to habits checklist</a> -->
+
+    <!-- Delete habit modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Delete Habit?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Are you sure? This cannot be undone.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <form action="{{ url_for('habits.delete_habit', slug=habit.slug) }}", method="POST">
+              <input class="btn btn-danger" type="submit" value="Delete">
+            </form>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Habit 1-yr history grid -->
+    {{ render_history_grid(history_grid) }}
+
+    <!-- Best Streaks -->
+    {% if longest_streaks|length > 0 %}
+      <h4 class="mb-4">Best Streaks</h4>
+      <div class="streak-container">
+      {% for streak in longest_streaks %}
+        <!-- Vars used to calculate width of streak span -->
+        {% set full_width = 45 %}
+        {% set min_width = 5 %}
+        {% set pct_of_full = streak.streak_length / longest_streaks[0].streak_length %}
+        <div class="mb-1">
+          <span class="streak-date">{{ streak.start.strftime("%b %-d, %Y") }}</span>
+          <span class="streak-length"
+                style="width:{{ [full_width * pct_of_full, min_width]|max }}%;">{{ streak.streak_length }}</span> 
+          <span class="streak-date">{{ streak.end.strftime("%b %-d, %Y") }}</span>
+        </div>
+      {% endfor %}
+      </div>
+    {% endif %}
+
   </div>
 {% endblock content %}

@@ -1,0 +1,33 @@
+<!-- Habit 1-yr history grid -->
+{% macro render_history_grid(history_grid) %}
+  <h4 class="mb-4">History</h4>
+  <div class="graph-outer-container container-border mb-5">
+    <div class="graph-inner-container">
+      <div class="graph">
+        <ul class="months">
+          {% for month in history_grid.month_labels %}
+            <li>{{ month }}</li>
+          {% endfor %}
+        </ul>
+        <ul class="days">
+          {% for day in ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] %}
+            <li>{{ day }}</li>
+          {% endfor %}
+        </ul>
+        <ul class="squares">
+          {% for grid_square in history_grid.squares %}
+            <li data-level="{{ grid_square.level }}">
+              <div class="grid-tooltip">
+                <div class="font-weight-bold">
+                  {{ grid_square.num_complete }} / {{ grid_square.num_active }} completed
+                </div>
+                <div>on {{ grid_square.date_label }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+{% endmacro %}
