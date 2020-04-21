@@ -182,9 +182,13 @@ class Habit(db.Document):
         else:
             self.set_complete(date)
 
-    def get_longest_streak(self):
-        """Get the number of days in the longest continuous completion streak for the habit"""
-        return HabitStreak.objects(habit=self.id).order_by("-streak_length").first()
+    def get_longest_streaks(self, num=1):
+        """Get the longest `num` streaks for the habit"""
+        return HabitStreak.objects(habit=self.id).order_by("-streak_length")[:num]
+
+    def get_recent_streaks(self, num=1):
+        """Get the most recent `num` streaks for the habit"""
+        return HabitStreak.objects(habit=self.id).order_by("-start")[:num]
 
     def __repr__(self):
         return f"Habit(name='{self.name}', user='{self.user.username}')"
@@ -203,7 +207,7 @@ class HabitStreak(db.Document):
     end = db.DateTimeField(required=True)
     """Inclusive end date of a streak of habit completions"""
 
-    streak_length = db.IntField(required=True, default=1)
+    streak_length = db.IntField()
     habit = db.ReferenceField(Habit, required=True, reverse_delete_rule=db.CASCADE, unique_with="start")
     user = db.ReferenceField(User, reverse_delete_rule=db.CASCADE)
 
