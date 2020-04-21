@@ -14,7 +14,8 @@ body {
 }
 
 .container {
-    max-width: 900px
+    max-width: 900px;
+    overflow: hidden;
 }
 
 .container-border {
@@ -145,12 +146,18 @@ ul {
 .months { grid-area: months; }
 .days { grid-area: days; }
 .squares { grid-area: squares; }
-
 .months, .days, .squares { padding: 0; }
 
-.graph-container {
-    overflow: auto;
+/* Two containers to maintain slight margin on left when there is overflow */
+.graph-outer-container {
     margin: 0;
+    padding-left: 1rem;
+}
+
+.graph-inner-container {
+    margin: 0;
+    overflow: hidden;
+    padding: 2.5rem 3.3rem 2rem 1rem;
 }
 
 .graph {
@@ -159,7 +166,8 @@ ul {
                          "days squares";
     grid-template-columns: auto 1fr;
     grid-gap: 0.625rem;
-    margin: 2.2rem 2rem;
+    float: right;
+    margin: 0;
 }
 
 .months {
@@ -219,3 +227,25 @@ ul {
     border-style: solid;
     border-color: black transparent transparent transparent;
 }
+
+.streak-container {
+    justify-content: center;
+    overflow: auto;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.streak-date {
+    width: 7rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.streak-length {
+    background: rgb(100, 100, 100);
+    color: white;
+    text-align: center;
+    display: inline-block;
+    border-radius: 0.3rem;
+}
+
