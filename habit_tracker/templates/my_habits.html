@@ -1,11 +1,10 @@
 {% from "macros.html" import render_history_grid %}
 {% extends "layout.html" %}
 {% block content %}
+  
+  <!-- Habit Checklist -->
   <div class="content-section">
-
-    <!-- Habit Checklist -->
-    <h4 class="mb-4">Checklist</h4>
-    <div class="mb-5">
+    <div class="section-header">Checklist</div>
       {% if habits|length > 0 %}
         <div class="table-responsive container-border mb-2">
           <table class="table">
@@ -59,9 +58,10 @@
         {% endif %}
       </form>
     </div>
+  </div>
 
-    <!-- Habit 1-yr history grid -->
+  <!-- Habit 1-yr history grid -->
+  <div class="content-section">
     {{ render_history_grid(history_grid) }}
-
   </div>
 {% endblock content %}

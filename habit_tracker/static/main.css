@@ -11,6 +11,17 @@
 
 body {
     margin-top: 5rem;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.section-header {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: bold;
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: rgb(42, 42, 42);
 }
 
 .container {
@@ -19,13 +30,26 @@ body {
 }
 
 .container-border {
-    border: 0.0625rem #e1e4e8 solid;
+    border-style: solid;
+    border: 0.1rem #e1e4e8 solid;
     border-radius: 0.2rem;
 }
 
 .content-section {
     background: #ffffff;
-    margin-bottom: 20px;
+    margin-bottom: 4rem;
+    margin-top: 2rem;
+}
+
+.habit-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 2.5rem;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    color: rgb(0, 0, 0);
 }
 
 .table {
@@ -38,25 +62,35 @@ body {
     vertical-align: middle;
 }
 
-.date-label {
+.table .date-label, .habit-link {
+    color: rgb(61, 61, 61);
+    font-weight: normal;
+}
+
+.table .date-label {
     text-align: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .table .habit-link {
-    color: black;
-    font-weight: normal;
     text-decoration: none;
 }
 
 .table .habit-link:hover {
-    font-weight: bold;
+    color: rgb(0, 0, 0);
 }
 
 .table .habit-label {
     /* set to relative so that stretched-link works */
     position: relative;
     padding-left: 1rem;
+    width: 15rem;
+}
+
+.table .habit-label:hover {
+    background-color: rgb(240, 240, 240);
+    /* border-style: none none solid none;
+    border-color: rgb(98, 98, 98); */
 }
 
 .table th {
@@ -89,7 +123,7 @@ body {
     height: var(--checkbox-size);
     width: var(--checkbox-size);
     border-radius: 0.25rem;
-    background-color: #eee;
+    background-color: rgb(226, 226, 226);
 }
 
 /* When the checkbox is checked, add a dark gray background */
@@ -236,16 +270,24 @@ ul {
 }
 
 .streak-date {
-    width: 7rem;
-    text-align: center;
+    width: 6rem;
     display: inline-block;
+    font-size: 0.8rem;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .streak-length {
     background: rgb(100, 100, 100);
     color: white;
-    text-align: center;
     display: inline-block;
     border-radius: 0.3rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.habit-strength-graph {
+    display: block;
+    margin: 0 auto;
 }
 
