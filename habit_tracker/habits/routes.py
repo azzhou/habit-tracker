@@ -21,7 +21,7 @@ HISTORY_GRID_BREAKS = [0, 0.25, 0.5, 0.75, 1]
 @habits.route("/my_habits/", methods=["GET", "POST"])
 @login_required
 def my_habits():
-    habit_list = Habit.objects(user=current_user.id, active=True)
+    habit_list = Habit.objects(user=current_user.id, active=True).order_by("date_created")
     num_days_in_checklist = 7
 
     new_habit_form = AddHabitForm()

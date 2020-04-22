@@ -33,11 +33,12 @@ class Habit(db.Document):
     slug = db.StringField()
     user = db.ReferenceField(User, required=True, reverse_delete_rule=db.CASCADE, unique_with="name")
     active = db.BooleanField(default=True)
-    date_created = db.DateTimeField(default=lambda: date.today())
+    date_created = db.DateTimeField(default=lambda: datetime.today())
 
     meta = {
         "indexes": [
             "user",  # used as a filter in nearly all Habit queries
+            "date_created"  # used for ordering habits in checklist
         ]
     }
 
@@ -56,22 +57,22 @@ class Habit(db.Document):
         if self.slug is None:
             self.set_unique_slug()
 
-    def is_active_date(self, date):
+    def is_active_date(self, my_date):
         """Check if a habit is active on a given date"""
-        return self.date_created.date() <= date <= date.today()
+        return self.date_created.date() <= my_date <= date.today()
 
-    def get_completion_status(self, date):
+    def get_completion_status(self, my_date):
         """Return whether a habit is complete, incomplete, or inactive on a given date.
 
         Args:
-            date (datetime.date): Date for which we are checking a habit's status.
+            my_date (datetime.date): Date for which we are checking a habit's status.
 
         Returns:
             HabitStatus: Enum representing habit completion status.
         """
-        date_with_time = datetime.combine(date, datetime.min.time())
-        if not self.is_active_date(date):
+        if not self.is_active_date(my_date):
             return HabitStatus.INACTIVE
+        date_with_time = datetime.combine(my_date, datetime.min.time())
         streak = HabitStreak.objects(
             habit=self.id,
             start__lte=date_with_time,
@@ -104,17 +105,17 @@ class Habit(db.Document):
             end = min(len(completion_list), (streak.end - start_date).days + 1)
             completion_list[start:end] = [HabitStatus.COMPLETE] * (end - start)
         # Replace those that are inactive
-        if start_date < self.date_created:
-            inactive_days = (self.date_created - start_date).days
+        if not self.is_active_date(start_date.date()):
+            inactive_days = (self.date_created.date() - start_date.date()).days
             completion_list[:inactive_days] = [HabitStatus.INACTIVE] * inactive_days
         return completion_list
 
-    def set_complete(self, date):
+    def set_complete(self, my_date):
         """Set a habit as complete on a given date"""
-        if (not self.is_active_date(date) or
-                self.get_completion_status(date) == HabitStatus.COMPLETE):
+        if (not self.is_active_date(my_date) or
+                self.get_completion_status(my_date) == HabitStatus.COMPLETE):
             return
-        date_with_time = datetime.combine(date, datetime.min.time())
+        date_with_time = datetime.combine(my_date, datetime.min.time())
         previous_day = date_with_time - timedelta(1)
         next_day = date_with_time + timedelta(1)
         left_streak = HabitStreak.objects(habit=self.id, end=previous_day).first()
@@ -138,11 +139,11 @@ class Habit(db.Document):
             # Create new streak
             HabitStreak(start=date_with_time, end=date_with_time, habit=self.id).save()
 
-    def set_incomplete(self, date):
+    def set_incomplete(self, my_date):
         """Set a habit as incomplete on a given date"""
-        if not self.is_active_date(date):
+        if not self.is_active_date(my_date):
             return
-        date_with_time = datetime.combine(date, datetime.min.time())
+        date_with_time = datetime.combine(my_date, datetime.min.time())
         streak = HabitStreak.objects(
             habit=self.id,
             start__lte=date_with_time,
@@ -173,14 +174,14 @@ class Habit(db.Document):
             streak.save()
             HabitStreak(start=right_streak_start, end=right_streak_end, habit=self.id).save()
 
-    def toggle_complete(self, date):
+    def toggle_complete(self, my_date):
         """Set a habit as completed if it is currently incomplete, otherwise set it as incomplete"""
-        if not self.is_active_date(date):
+        if not self.is_active_date(my_date):
             return
-        if self.get_completion_status(date) == HabitStatus.COMPLETE:
-            self.set_incomplete(date)
+        if self.get_completion_status(my_date) == HabitStatus.COMPLETE:
+            self.set_incomplete(my_date)
         else:
-            self.set_complete(date)
+            self.set_complete(my_date)
 
     def get_longest_streaks(self, num=1):
         """Get the longest `num` streaks for the habit"""
