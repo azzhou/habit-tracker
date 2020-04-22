@@ -89,7 +89,12 @@ def _grid_squares(habits, break_points, start_date, end_date):
     grid = []
     curr_date = start_date
 
-    completion_per_habit = [habit.get_completion_status_range(start_date, end_date) for habit in habits]
+    completion_per_habit = (
+        [habit.get_completion_status_range(start_date, end_date) for habit in habits]
+        if len(habits) > 0
+        else [[None] * ((end_date - start_date).days + 1)]
+    )
+
     completion_per_day = zip(*completion_per_habit)
 
     for one_day_completion in completion_per_day:
@@ -106,6 +111,7 @@ def _grid_squares(habits, break_points, start_date, end_date):
             level=level,
             date_label=date_label)
         )
+
     return grid
 
 
