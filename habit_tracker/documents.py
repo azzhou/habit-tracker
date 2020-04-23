@@ -14,12 +14,11 @@ def load_user(user_id):
 
 
 class User(db.Document, UserMixin):
-    username = db.StringField(max_length=20, unique=True, required=True)
     email = db.StringField(max_length=120, unique=True, required=True)
     password = db.StringField(max_length=60, required=True)
 
     def __repr__(self):
-        return f"User(username='{self.username}', email='{self.email}')"
+        return f"User(email='{self.email}')"
 
 
 class HabitStatus(Enum):
@@ -192,7 +191,7 @@ class Habit(db.Document):
         return HabitStreak.objects(habit=self.id).order_by("-start")[:num]
 
     def __repr__(self):
-        return f"Habit(name='{self.name}', user='{self.user.username}')"
+        return f"Habit(name='{self.name}', user='{self.user.email}')"
 
 
 class HabitStreak(db.Document):

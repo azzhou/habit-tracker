@@ -107,14 +107,14 @@
           {{ rename_habit_form.hidden_tag() }}
           <div class="modal-body">
             {% if rename_habit_form.new_name.errors %}
-              {{ rename_habit_form.new_name(class="form-control form-control-lg is-invalid") }}
+              {{ rename_habit_form.new_name(class="form-control is-invalid") }}
                 <div class="invalid-feedback">
                   {% for error in rename_habit_form.new_name.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
             {% else %}
-              {{ rename_habit_form.new_name(class="form-control form-control-lg") }}
+              {{ rename_habit_form.new_name(class="form-control") }}
             {% endif %}
           </div>
           <div class="modal-footer">

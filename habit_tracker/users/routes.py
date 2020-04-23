@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from habit_tracker.users.forms import (RegistrationForm, LoginForm,
-                                       UpdateBasicInfoForm, UpdateAccountPasswordForm)
+                                       UpdateEmailForm, UpdatePasswordForm)
 from flask_login import current_user, login_user, logout_user, login_required
 from habit_tracker import bcrypt
 from habit_tracker.documents import User
@@ -19,7 +19,6 @@ def register():
     if form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(
-            username=form.username.data,
             email=form.email.data,
             password=hashed_pass
         )
@@ -40,7 +39,7 @@ def login():
         user = User.objects(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            flash(f"Welcome back, {user.username}!", category="info")
+            flash(f"Welcome back!", category="info")
             return redirect(url_for('main.home'))
         else:
             flash("Login unsuccessful. Please check email and password.", category="danger")
@@ -56,24 +55,22 @@ def logout():
 @users.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-    basic_info_form = UpdateBasicInfoForm()
-    password_form = UpdateAccountPasswordForm()
+    email_form = UpdateEmailForm()
+    password_form = UpdatePasswordForm()
     anchor = ""
 
     # Check submit field's data because is_submitted() doesn't differentiate between forms
-    if basic_info_form.submit_info.data:
-        if basic_info_form.validate():
-            current_user.username = basic_info_form.username.data
-            current_user.email = basic_info_form.email.data
+    if email_form.submit_email.data:
+        if email_form.validate():
+            current_user.email = email_form.email.data
             current_user.save()
-            flash("Your basic info has been updated!", category="success")
+            flash("Your email has been updated!", category="success")
             return redirect(url_for("users.account"))
         else:
             # Used to bring form into view using JS if there are validation errors
-            anchor = "update-basic-info"
+            anchor = "update-email"
     else:
-        basic_info_form.username.data = current_user.username
-        basic_info_form.email.data = current_user.email
+        email_form.email.data = current_user.email
 
     # Check submit field's data because is_submitted() doesn't differentiate between forms
     if password_form.submit_password.data:
@@ -89,6 +86,6 @@ def account():
 
     return render_template("account.html",
                            title="Account",
-                           basic_info_form=basic_info_form,
+                           email_form=email_form,
                            password_form=password_form,
                            anchor=anchor)
