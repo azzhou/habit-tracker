@@ -111,7 +111,6 @@ def _grid_squares(habits, break_points, start_date, end_date):
             level=level,
             date_label=date_label)
         )
-
     return grid
 
 

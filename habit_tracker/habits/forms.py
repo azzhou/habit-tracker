@@ -31,4 +31,4 @@ class RenameHabitForm(FlaskForm):
         if self.new_name.data == self.current_name.data:
             raise ValidationError("The new habit name must be different from the current name.")
         elif Habit.objects(user=current_user.id, name=name.data):
-            raise ValidationError("You are already tracking another habit with this name.")
+            raise ValidationError(f"You are already tracking another habit named '{name.data}'.")
