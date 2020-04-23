@@ -63,10 +63,16 @@
   <div class="content-section">
     <div class="section-header">Habit Strength</div>
     <div class="container-border py-4">
-      <img class="habit-strength-graph"
-            src="{{ url_for('habits.plot_habit_strength', slug=habit.slug) }}"
-            alt="habit strength plot svg"
-            width="80%">
+      
+      <figure class="figure d-block text-center">
+        <img src="{{ url_for('habits.plot_habit_strength', slug=habit.slug) }}" 
+              class="figure-img img-fluid rounded" 
+              alt="A generic square placeholder image with rounded corners in a figure."
+              width="80%">
+        <figcaption class="figure-caption">
+          Habit strength represents the two-week rolling average of habit completion rate.
+        </figcaption>
+      </figure>
     </div>
   </div>
 
