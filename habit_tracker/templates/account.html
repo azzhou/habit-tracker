@@ -2,6 +2,8 @@
 
 {% block content %}
   <div class="content-section">
+
+    <!-- Update email form -->
     <form method="POST" action="" id="update-email">
       {{ email_form.hidden_tag() }}
       <h4 class="border-bottom mb-4 ">Update Account Info</h4>
@@ -25,6 +27,7 @@
 
     <h4 class="border-bottom mb-4 "></h4>
 
+    <!-- Update password form -->
     <form method="POST" action="" id="update-password">
       {{ password_form.hidden_tag() }}
       <fieldset class="form-group">
@@ -73,9 +76,41 @@
       </fieldset>
       
     </form>
+
+    <h4 class="border-bottom mb-4 "></h4>
+
+    <!-- Delete account button to activate modal -->
+    <button type="button" 
+            class="btn btn-outline-secondary"
+            data-toggle="modal" 
+            data-target="#deleteAccountModal">
+      Delete Account
+    </button>
   </div>
 
 
+  <!-- Delete account modal -->
+  <div class="modal" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure? This cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+          <form action="{{ url_for('users.delete_account') }}", method="POST">
+            <input class="btn btn-outline-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Bring a form into view if it had validation errors -->
   <script>

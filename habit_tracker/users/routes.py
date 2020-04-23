@@ -89,3 +89,11 @@ def account():
                            email_form=email_form,
                            password_form=password_form,
                            anchor=anchor)
+
+
+@users.route("/delete_account", methods=["POST"])
+@login_required
+def delete_account():
+    current_user.delete()
+    flash(f"Your account has been deleted!", category="success")
+    return redirect(url_for("users.register"))
