@@ -166,22 +166,24 @@ def create_habit_checklist(habits, num_days, end_date=date.today()):
 
 def habit_strength(habit, num_points, window_size):
     end_date = date.today()
-    start_date = end_date - timedelta(num_points - 1)
+    start_date = end_date - timedelta(num_points + window_size - 2)
+    series_start_date = end_date - timedelta(num_points - 1)
     completion = habit.get_completion_status_range(start_date, end_date)
     completion_bin = [1 if c == HabitStatus.COMPLETE else 0 for c in completion]
     return Series(data=moving_avg(completion_bin, window_size),
-                  index=list(date_range(start_date, end_date)),
+                  index=list(date_range(series_start_date, end_date)),
                   name="Habit Strength")
 
 
 def moving_avg(nums, window_size):
-    extended_nums = [0] * window_size + nums
+    if not nums:
+        return []
     moving_avg = []
-    current_sum = 0
-    start, end = 0, window_size
-    while end < len(extended_nums):
-        current_sum += extended_nums[end] - extended_nums[start]
+    current_sum = sum(nums[:window_size - 1])
+    left, right = -1, window_size - 1
+    while right < len(nums):
+        current_sum += nums[right] - (nums[left] if left >= 0 else 0)
         moving_avg.append(current_sum / window_size)
-        start += 1
-        end += 1
+        left += 1
+        right += 1
     return moving_avg

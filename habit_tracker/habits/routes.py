@@ -96,7 +96,7 @@ def delete_habit(slug):
 
 
 @habits.route("/habit/<string:slug>/strength")
-def plot_habit_strength(slug, max_points=100, window_size=14):
+def plot_habit_strength(slug, max_points=60, window_size=14):
     habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
 
     # Determine number of dates to plot
