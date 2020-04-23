@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from habit_tracker.users.forms import (RegistrationForm, LoginForm,
                                        UpdateEmailForm, UpdatePasswordForm)
 from flask_login import current_user, login_user, logout_user, login_required
 from habit_tracker import bcrypt
 from habit_tracker.documents import User
+from habit_tracker.users.utils import is_safe_url
 
 
 users = Blueprint("users", __name__)
@@ -40,6 +41,11 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash(f"Welcome back!", category="info")
+
+            next_page = request.args.get("next")
+            if next_page and is_safe_url(next_page):
+                return redirect(next_page)
+
             return redirect(url_for('main.home'))
         else:
             flash("Login unsuccessful. Please check email and password.", category="danger")
