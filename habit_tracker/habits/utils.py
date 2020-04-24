@@ -7,7 +7,7 @@ from habit_tracker.documents import HabitStatus
 from pandas import Series
 
 
-def date_range(start_date, end_date, reverse=False):
+def date_range(start_date, end_date, step=1, reverse=False):
     """Generator that yields datetime.date objects between specified start and end dates.
 
     Args:
@@ -18,7 +18,7 @@ def date_range(start_date, end_date, reverse=False):
     Yields:
         datetime.date: Current date in the range that is yielded.
     """
-    for n in range((end_date - start_date).days + 1):
+    for n in range((end_date - start_date).days + step):
         yield start_date + timedelta(n) if not reverse else end_date - timedelta(n)
 
 

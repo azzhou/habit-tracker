@@ -96,24 +96,27 @@ def delete_habit(slug):
 
 
 @habits.route("/habit/<string:slug>/strength")
-def plot_habit_strength(slug, max_points=60, window_size=14):
+def plot_habit_strength(slug):
     habit = Habit.objects(user=current_user.id, slug=slug).get_or_404()
 
-    # Determine number of dates to plot
-    max_points = min(max_points, 365)
+    # Determine number of points to be plotted
+    max_points = 100
     min_points = 7
     habit_age = (date.today() - habit.date_created.date()).days
     num_points = min(max_points, max(habit_age, min_points))
 
-    habit_strength_ts = habit_strength(habit, num_points, window_size)
-    fig = Figure(figsize=(8, 5))
+    # Number of days in the moving average
+    window_size = 30
 
+    # Generate time series and plot
+    habit_strength_ts = habit_strength(habit, num_points, window_size)
+    fig = Figure(figsize=(10, 5))
     axis = fig.add_subplot(1, 1, 1, ylim=(0, 1))
     axis.fill_between(
         x=habit_strength_ts.index,
         y1=0,
         y2=habit_strength_ts.values,
-        color="grey"
+        color="#2b8cbe"
     )
 
     # Format axes
@@ -123,6 +126,8 @@ def plot_habit_strength(slug, max_points=60, window_size=14):
     axis.xaxis.set_ticks_position("none")
     axis.yaxis.set_ticks_position("none")
     axis.grid(color="#c9c9c9", axis="y")
+    axis.grid(color="#c9c9c9", axis="x")
+    axis.xaxis.set_ticks(habit_strength_ts.index[::-len(habit_strength_ts.index) // 10])
     axis.margins(x=0)
 
     # Format spines (plot outline)
