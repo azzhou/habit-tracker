@@ -14,6 +14,39 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
+.full-width-background {
+    margin: 0 -9999rem;
+    /* add back negative margin value */
+    padding-right: 9999rem;
+    padding-left: 9999rem;
+    background: rgb(245, 245, 245);
+}
+
+
+.value-prop-container {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    text-align: center;
+}
+
+.value-prop-text {
+    margin: 1.5rem;
+}
+
+.value-prop-img {
+    width: 60%;
+    opacity: 0.9;
+}
+
+.get-started-btn {
+    text-align: center;
+    margin-top: 6rem;
+}
+
 .section-header {
     font-family: 'Noto Sans JP', sans-serif;
     font-weight: bold;
@@ -26,7 +59,8 @@ body {
 
 .container {
     max-width: 900px;
-    overflow: hidden;
+    margin-bottom: 2rem;
+    /* overflow: hidden; */
 }
 
 .container-border {
@@ -126,9 +160,9 @@ body {
     background-color: rgb(226, 226, 226);
 }
 
-/* When the checkbox is checked, add a dark gray background */
+/* When the checkbox is checked, add a blue background */
 .checkmark-container input:checked ~ .checkmark {
-    background-color: rgb(102, 102, 102);
+    background-color: #2b8cbe;
 }
 
 /* On mouse-over, add a light gray background color, checked or unchecked */
@@ -225,11 +259,18 @@ ul {
 }
 
 /* Colors in the habit history grid by level */
-.squares li { background-color: rgb(231, 231, 231); }
-.squares li[data-level="1"] { background-color: rgb(165, 165, 165); }
-.squares li[data-level="2"] { background-color: rgb(110, 110, 110); }
-.squares li[data-level="3"] { background-color: rgb(55, 55, 55); }
-.squares li[data-level="4"] { background-color: rgb(0, 0, 0); }
+.squares li { background-color: #f1eef6; }
+.squares li[data-level="1"] { background-color: #bdc9e1; }
+.squares li[data-level="2"] { background-color: #74a9cf; }
+.squares li[data-level="3"] { background-color: #2b8cbe; }
+.squares li[data-level="4"] { background-color: #045a8d; }
+
+/* .squares li { background-color: #ffffcc; }
+.squares li[data-level="1"] { background-color: #a1dab4; }
+.squares li[data-level="2"] { background-color: #41b6c4; }
+.squares li[data-level="3"] { background-color: #2c7fb8; }
+.squares li[data-level="4"] { background-color: #253494; } */
+
 
 .squares li:hover .grid-tooltip{
     visibility: visible;
@@ -278,7 +319,7 @@ ul {
 }
 
 .streak-length {
-    background: rgb(100, 100, 100);
+    background: #2b8cbe;
     color: white;
     display: inline-block;
     border-radius: 0.3rem;

@@ -39,10 +39,13 @@
   </div>
 
   <!-- Best Streaks -->
-  {% if longest_streaks|length > 0 %}
-    <div class="content-section">
-      <div class="section-header">Best Streaks</div>
-      <div class="streak-container container-border py-4">
+  
+  <div class="content-section">
+    <div class="section-header">Best Streaks</div>
+    <div class="streak-container container-border py-4">
+    {% if longest_streaks|length == 0 %}
+      No streaks yet. Start building one today!
+    {% else %}
       {% for streak in longest_streaks %}
         <!-- Vars used to calculate width of streak span -->
         {% set full_width = 45 %}
@@ -55,9 +58,9 @@
           <span class="streak-date">{{ streak.end.strftime("%b %-d, %Y") }}</span>
         </div>
       {% endfor %}
-      </div>
+    {% endif %}
     </div>
-  {% endif %}
+  </div>
 
   <!-- Habit Strength -->
   <div class="content-section">
@@ -67,10 +70,10 @@
       <figure class="figure d-block text-center">
         <img src="{{ url_for('habits.plot_habit_strength', slug=habit.slug) }}" 
               class="figure-img img-fluid rounded" 
-              alt="A generic square placeholder image with rounded corners in a figure."
-              width="80%">
+              alt="habit strength figure"
+              width="90%">
         <figcaption class="figure-caption">
-          Habit strength represents the two-week rolling average of habit completion rate.
+          Habit strength represents the one-month rolling average of habit completion rate.
         </figcaption>
       </figure>
     </div>
