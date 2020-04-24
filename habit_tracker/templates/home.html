@@ -1,13 +1,40 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Welcome!</h1>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia 
-    deserunt mollit anim id est laborum.
-  </p>
-  <a href="{{ url_for('users.register') }}" class="btn btn-info" role="button">Get Started</a>
+
+  <div class="value-prop-container">
+    <div class="value-prop-text">
+      <h1><strong>Build strong habits.</strong></h1>
+      <p>Organize your life and achieve your goals by tracking daily habits.</p>
+    </div>
+    <img src="{{ url_for('static', filename='images/checklist.png') }}" 
+         alt="habit checklist image"
+         class="value-prop-img">
+  </div>
+
+  <div class="value-prop-container full-width-background">
+    <div class="value-prop-text">
+      <h1><strong>Track long-term progress.</strong></h1>
+      <p>See how your habits develop and improve.</p>
+    </div>
+    <img src="{{ url_for('static', filename='images/history_grid.png') }}" 
+        alt="habit history image"
+        class="value-prop-img">
+    <img src="{{ url_for('static', filename='images/habit_strength.png') }}" 
+        alt="habit trend image"
+        class="value-prop-img">
+  </div>
+
+  <div class="value-prop-container">
+    <div class="value-prop-text">
+      <h1><strong>Motivate yourself.</strong></h1>
+      <p>Streaks provide encouragement to surpass earlier benchmarks.</p>
+    </div>
+    <img src="{{ url_for('static', filename='images/streaks.png') }}" 
+         alt="habit streak image"
+         class="value-prop-img">
+
+    <div class="get-started-btn">
+      <a href="{{ url_for('users.register') }}" class="btn btn-outline-info" role="button">Get Started</a>
+    </div>
+  </div>
 {% endblock content %}

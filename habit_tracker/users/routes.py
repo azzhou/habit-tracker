@@ -40,7 +40,6 @@ def login():
         user = User.objects(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            flash(f"Welcome back!", category="info")
 
             next_page = request.args.get("next")
             if next_page and is_safe_url(next_page):
