@@ -38,6 +38,7 @@ html, body {
 }
 
 .value-prop-img {
+    margin-top: 1rem;
     width: 60%;
     opacity: 0.9;
 }
