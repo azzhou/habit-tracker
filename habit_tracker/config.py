@@ -14,7 +14,8 @@ class DevConfig(Config):
 
 
 class ProdConfig(Config):
-    user = os.getenv("ATLAS_USER")
-    password = os.getenv("ATLAS_PASS")
+    user = os.environ["ATLAS_USER"]
+    password = os.environ["ATLAS_PASS"]
     MONGODB_HOST = (f"mongodb+srv://{user}:{password}@habittracker-abi1c.mongodb.net/"
                     "habit_tracker?retryWrites=true&w=majority")
+    SECRET_KEY = os.environ["SECRET_KEY"]
