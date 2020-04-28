@@ -14,10 +14,28 @@ login_manager.login_view = "users.login"
 login_manager.login_message_category = "warning"
 
 
-def create_app(config_class):
-    app = Flask(__name__, instance_relative_config=True)
+def create_app(config="dev"):
+    """Set up Habit Tracker application.
+
+    Application factory that allows for multiple instances of the application with different settings.
+
+    Args:
+        config (str): Abbreviation for a configuration class.
+
+    Returns:
+        [Flask]: Flask application.
+    """
+
+    cfg_dict = {
+        "dev": "habit_tracker.config.DevConfig",
+        "prod": "habit_tracker.config.ProdConfig"
+    }
+    config_class = cfg_dict.get(config)
+    if config_class is None:
+        raise ValueError(f"The 'config' arg must be one of {list(cfg_dict.keys())}.")
+
+    app = Flask(__name__)
     app.config.from_object(config_class)
-    # app.config.from_pyfile('private_config.cfg', silent=True)
 
     db.init_app(app)
     bcrypt.init_app(app)

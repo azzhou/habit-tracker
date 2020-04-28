@@ -1,3 +1,6 @@
+import os
+
+
 class Config:
     """Base Flask configuration values"""
     DEBUG = False
@@ -11,4 +14,7 @@ class DevConfig(Config):
 
 
 class ProdConfig(Config):
-    pass
+    user = os.getenv("ATLAS_USER")
+    password = os.getenv("ATLAS_PASS")
+    MONGODB_HOST = (f"mongodb+srv://{user}:{password}@habittracker-abi1c.mongodb.net/"
+                    "habit_tracker?retryWrites=true&w=majority")
