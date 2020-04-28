@@ -135,7 +135,7 @@ def plot_habit_strength(slug):
         axis.spines[side].set_color("#c9c9c9")
 
     # Reduce margins around border of plot
-    fig.tight_layout()
+    fig.set_tight_layout(True)
 
     output = BytesIO()
     FigureCanvasSVG(fig).print_svg(output)
